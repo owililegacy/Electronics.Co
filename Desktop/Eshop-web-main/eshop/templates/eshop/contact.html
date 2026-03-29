@@ -1,0 +1,40 @@
+{% extends 'eshop/base.html' %}
+
+{% block content %}
+<section class="contact-section">
+  <div class="container">
+    <h1 class="section-title">Contact Us</h1>
+    <p class="intro">Have questions or need assistance? We’re here to help!</p>
+
+    <div class="contact-info">
+      <div class="info-item">
+        <h3>📞 Phone</h3>
+        <p>+254 712 345 678</p>
+      </div>
+      <div class="info-item">
+        <h3>📧 Email</h3>
+        <p>support@electroshop.com</p>
+      </div>
+      <div class="info-item">
+        <h3>📍 Address</h3>
+        <p>123 Tech Avenue, Nairobi</p>
+      </div>
+    </div>
+
+    <div class="contact-form text-center py-5">
+      <h2>🚀 Live Support Available!</h2>
+      <p class="lead text-muted mb-4">Get instant help with products, orders, and more.</p>
+      <a href="{% url 'eshop:support' %}" class="btn btn-orange btn-lg px-5 py-3 mb-4 d-block mx-auto" style="max-width: 300px; font-size: 1.3rem;">
+        <i class="bi bi-chat-dots me-2"></i>Start Live Chat
+      </a>
+      <p class="text-muted">Our support bot is ready 24/7!</p>
+      <div class="contact-info mt-5">
+        <div class="info-item">
+          <h3>📧 Email</h3>
+          <p>support@electroshop.com</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

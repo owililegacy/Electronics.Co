@@ -1,0 +1,23 @@
+{% extends 'eshop/base.html' %}
+{% block content %}
+<div style="max-width:500px; margin:50px auto; padding:30px; border:1px solid #ddd; border-radius:10px;">
+  <h2 style="color:#e67e00; text-align:center;">Complete Payment</h2>
+  <p style="text-align:center;">Order #{{ order.id }}</p>
+  <h3 style="text-align:center; color:#e67e00;">Total: KES {{ order.get_total_price }}</h3>
+
+  <!-- M-Pesa -->
+  <div style="border:1px solid #4CAF50; border-radius:8px; padding:20px; margin:20px 0;">
+    <h4 style="color:#4CAF50;"> Pay with M-Pesa</h4>
+    <form method="POST" action="{% url 'eshop:pay_mpesa' order.id %}">
+      {% csrf_token %}
+      <input type="tel" name="phone_number" placeholder="e.g. 0712345678" required
+        style="width:100%; padding:10px; border:1px solid #ccc; border-radius:5px; margin:10px 0;">
+      <button type="submit" 
+        style="background:#4CAF50; color:white; padding:10px; width:100%; border:none; border-radius:5px; cursor:pointer;">
+        Send M-Pesa Prompt
+      </button>
+    </form>
+  </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,341 @@
+{% extends 'eshop/base.html' %}
+{% block content %}
+
+<div class="container py-5" style="max-width: 860px;">
+
+    <!-- Header -->
+    <div class="text-center mb-5">
+        <h1 style="color:#ff6600; font-weight:700;">Frequently Asked Questions</h1>
+        <p class="text-muted">Everything you need to know about shopping at E-SHOP</p>
+        <hr style="border-color:#ff6600; width:80px; border-width:3px; margin:auto;">
+    </div>
+
+    <!-- Search Bar -->
+    <div class="mb-4">
+        <input type="text" id="faq-search" class="form-control form-control-lg"
+               placeholder="🔍 Search FAQs e.g. 'delivery', 'refund', 'M-Pesa'..."
+               style="border:2px solid #ff6600; border-radius:10px;">
+    </div>
+
+    <!-- No results message -->
+    <div id="no-results" style="display:none;" class="alert alert-warning text-center">
+         No FAQs match your search. Try different keywords.
+    </div>
+
+    <!-- FAQ Categories -->
+
+    <!-- 🛒 Orders & Shopping -->
+    <div class="faq-section mb-4">
+        <h5 style="color:#ff6600; border-bottom:2px solid #ff6600; padding-bottom:6px;">
+            🛒 Orders & Shopping
+        </h5>
+        <div class="accordion" id="orders-accordion">
+
+            <div class="accordion-item faq-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                        How do I place an order?
+                    </button>
+                </h2>
+                <div id="faq1" class="accordion-collapse collapse">
+                    <div class="accordion-body text-muted">
+                        Browse our products, click <strong>Add to Cart</strong>, then go to your cart and click
+                        <strong>Proceed to Checkout</strong>. Fill in your delivery details and complete payment via M-Pesa.
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item faq-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                        Can I modify or cancel my order after placing it?
+                    </button>
+                </h2>
+                <div id="faq2" class="accordion-collapse collapse">
+                    <div class="accordion-body text-muted">
+                        Orders can be cancelled or modified within <strong>1 hour</strong> of placing them.
+                        After that, the order enters processing and cannot be changed.
+                        Contact us at <a href="mailto:support@eshop.com">support@eshop.com</a> immediately if you need to make changes.
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item faq-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                        How do I track my order?
+                    </button>
+                </h2>
+                <div id="faq3" class="accordion-collapse collapse">
+                    <div class="accordion-body text-muted">
+                        Log in to your account and visit <a href="{% url 'eshop:orders_list' %}"><strong>My Orders</strong></a>.
+                        Each order shows its current status: Pending → Processing → Shipped → Delivered.
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item faq-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+                        Do I need an account to shop?
+                    </button>
+                </h2>
+                <div id="faq4" class="accordion-collapse collapse">
+                    <div class="accordion-body text-muted">
+                        You can browse products without an account, but you need to
+                        <a href="{% url 'eshop:register' %}">create a free account</a> to add items to your cart and place orders.
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- 💳 Payments -->
+    <div class="faq-section mb-4">
+        <h5 style="color:#ff6600; border-bottom:2px solid #ff6600; padding-bottom:6px;">
+            Payments
+        </h5>
+        <div class="accordion" id="payment-accordion">
+
+            <div class="accordion-item faq-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq5">
+                        What payment methods do you accept?
+                    </button>
+                </h2>
+                <div id="faq5" class="accordion-collapse collapse">
+                    <div class="accordion-body text-muted">
+                        We currently accept <strong>M-Pesa (STK Push)</strong>. Simply enter your phone number
+                        at checkout and you'll receive a prompt on your phone to enter your PIN.
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item faq-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq6">
+                        I was charged but my order shows "Not Paid". What do I do?
+                    </button>
+                </h2>
+                <div id="faq6" class="accordion-collapse collapse">
+                    <div class="accordion-body text-muted">
+                        This can happen due to a network delay. Wait a few minutes and refresh the page.
+                        If it still shows unpaid after 10 minutes, contact us at
+                        <a href="mailto:support@eshop.com">support@eshop.com</a> with your
+                        M-Pesa transaction code and order number.
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item faq-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq7">
+                        Is my payment information secure?
+                    </button>
+                </h2>
+                <div id="faq7" class="accordion-collapse collapse">
+                    <div class="accordion-body text-muted">
+                        Yes. All payments are processed directly through <strong>Safaricom M-Pesa</strong>.
+                        We never store your PIN or financial details on our servers.
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- 🚚 Delivery -->
+    <div class="faq-section mb-4">
+        <h5 style="color:#ff6600; border-bottom:2px solid #ff6600; padding-bottom:6px;">
+             Delivery & Shipping
+        </h5>
+        <div class="accordion" id="delivery-accordion">
+
+            <div class="accordion-item faq-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq8">
+                        How long does delivery take?
+                    </button>
+                </h2>
+                <div id="faq8" class="accordion-collapse collapse">
+                    <div class="accordion-body text-muted">
+                        <ul>
+                            <li><strong>Standard Delivery:</strong> 2–3 business days</li>
+                            <li><strong>Express Delivery:</strong> Next business day (selected areas)</li>
+                            <li><strong>Nairobi CBD:</strong> Same day delivery available</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item faq-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq9">
+                        How much does shipping cost?
+                    </button>
+                </h2>
+                <div id="faq9" class="accordion-collapse collapse">
+                    <div class="accordion-body text-muted">
+                        <strong>Free shipping</strong> on all orders over <strong>KES 5,000</strong>.
+                        For orders below that, a flat shipping fee applies depending on your location.
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item faq-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq10">
+                        Do you deliver outside Nairobi?
+                    </button>
+                </h2>
+                <div id="faq10" class="accordion-collapse collapse">
+                    <div class="accordion-body text-muted">
+                        Yes! We deliver nationwide across Kenya including Mombasa, Kisumu, Nakuru, Eldoret, and more.
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ↩️ Returns -->
+    <div class="faq-section mb-4">
+        <h5 style="color:#ff6600; border-bottom:2px solid #ff6600; padding-bottom:6px;">
+             Returns & Refunds
+        </h5>
+        <div class="accordion" id="returns-accordion">
+
+            <div class="accordion-item faq-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq11">
+                        What is your return policy?
+                    </button>
+                </h2>
+                <div id="faq11" class="accordion-collapse collapse">
+                    <div class="accordion-body text-muted">
+                        We offer a <strong>30-day return policy</strong> on all items. The product must be:
+                        <ul>
+                            <li>In its original condition and packaging</li>
+                            <li>Unused and undamaged</li>
+                            <li>Accompanied by proof of purchase</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item faq-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq12">
+                        My item arrived damaged. What should I do?
+                    </button>
+                </h2>
+                <div id="faq12" class="accordion-collapse collapse">
+                    <div class="accordion-body text-muted">
+                        Contact us <strong>within 48 hours</strong> of receiving your order at
+                        <a href="mailto:support@eshop.com">support@eshop.com</a> with:
+                        <ul>
+                            <li>Your order number</li>
+                            <li>Photos of the damaged item</li>
+                        </ul>
+                        We'll arrange a replacement or full refund.
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item faq-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq13">
+                        How long do refunds take?
+                    </button>
+                </h2>
+                <div id="faq13" class="accordion-collapse collapse">
+                    <div class="accordion-body text-muted">
+                        Refunds are processed within <strong>3–5 business days</strong> back to your M-Pesa.
+                        You'll receive an SMS confirmation once the refund is sent.
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!--  Account -->
+    <div class="faq-section mb-4">
+        <h5 style="color:#ff6600; border-bottom:2px solid #ff6600; padding-bottom:6px;">
+             Account & Security
+        </h5>
+        <div class="accordion" id="account-accordion">
+
+            <div class="accordion-item faq-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq14">
+                        I forgot my password. How do I reset it?
+                    </button>
+                </h2>
+                <div id="faq14" class="accordion-collapse collapse">
+                    <div class="accordion-body text-muted">
+                        Go to the <a href="{% url 'eshop:login' %}">Login page</a> and click
+                        <strong>"Forgot Password?"</strong>. Enter your email and we'll send you a reset link.
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item faq-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq15">
+                        How do I create an account?
+                    </button>
+                </h2>
+                <div id="faq15" class="accordion-collapse collapse">
+                    <div class="accordion-body text-muted">
+                        Click <a href="{% url 'eshop:register' %}"><strong>Sign Up</strong></a>, fill in your
+                        username, email and password. It's free and takes less than a minute!
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Still need help? -->
+    <div class="text-center mt-5 p-4 rounded" style="background:#fff8f0; border:1px solid #ffd9b3;">
+        <h5 style="color:#ff6600;">Still have questions?</h5>
+        <p class="text-muted">Our support team is ready to help you.</p>
+        <button class="btn btn-warning me-2" onclick="document.getElementById('chatbot-toggle').click()">
+    💬 Live Chat
+</button>
+        <a href="mailto:support@eshop.com" class="btn btn-outline-secondary">📧 Email Us</a>
+    </div>
+
+</div>
+
+<!-- FAQ Search Script -->
+<script>
+document.getElementById('faq-search').addEventListener('input', function () {
+    const query = this.value.toLowerCase();
+    const items = document.querySelectorAll('.faq-item');
+    const sections = document.querySelectorAll('.faq-section');
+    let totalVisible = 0;
+
+    items.forEach(item => {
+        const text = item.innerText.toLowerCase();
+        if (text.includes(query)) {
+            item.style.display = 'block';
+            totalVisible++;
+        } else {
+            item.style.display = 'none';
+        }
+    });
+
+    // Hide sections with no visible items
+    sections.forEach(section => {
+        const visible = section.querySelectorAll('.faq-item[style="display: block;"]');
+        section.style.display = visible.length === 0 && query ? 'none' : 'block';
+    });
+
+    document.getElementById('no-results').style.display = totalVisible === 0 ? 'block' : 'none';
+});
+</script>
+
+{% endblock %}

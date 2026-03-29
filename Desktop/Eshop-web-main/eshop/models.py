@@ -1,0 +1,157 @@
+from django.db import models
+
+# Create your models here.
+from django.contrib.auth.models import User
+from django.core.validators import MinValueValidator
+
+class Category(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+    slug = models.SlugField(max_length=255, unique=True)
+
+    class Meta:
+        verbose_name_plural = 'Categories'
+
+    def __str__(self):
+        return self.name
+
+class Product(models.Model):
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='products')
+    name = models.CharField(max_length=255)
+    slug = models.SlugField(max_length=255)
+    description = models.TextField(blank=True)
+    price = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0.01)])
+    image = models.FileField(upload_to='products/', blank=True, null=True)
+    available = models.BooleanField(default=True)
+    stock = models.PositiveIntegerField(default=0)  # Track inventory
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
+
+class Cart(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='cart')  # One cart per user
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f'Cart for {self.user.username}'
+
+    @property
+    def get_total_price(self):
+        return sum(item.get_total_price() for item in self.items.all())
+
+class CartItem(models.Model):
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='items')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1, validators=[MinValueValidator(1)])
+
+    def __str__(self):
+        return f'{self.quantity} x {self.product.name}'
+    
+    def get_total_price(self):
+        return self.quantity * self.product.price
+
+class Order(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='orders')
+    first_name = models.CharField(max_length=255)
+    last_name = models.CharField(max_length=255)
+    email = models.EmailField()
+    address = models.CharField(max_length=255)
+    postal_code = models.CharField(max_length=20)
+    city = models.CharField(max_length=255)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+    paid = models.BooleanField(default=False)
+    status = models.CharField(max_length=50, choices=[
+        ('PENDING', 'Pending'),
+        ('PROCESSING', 'Processing'),
+        ('SHIPPED', 'Shipped'),
+        ('DELIVERED', 'Delivered'),
+        ('CANCELLED', 'Cancelled'),
+    ], default='PENDING')
+
+    def get_total_price(self):
+        return sum(item.get_total_price() for item in self.items.all())
+    
+    def get_total_cost(self):
+        return self.get_total_price()
+    
+    def __str__(self):
+        return f'Order {self.id}'
+
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    price = models.DecimalField(max_digits=10, decimal_places=2)  # Store price at order time
+    quantity = models.PositiveIntegerField(default=1)
+
+    def __str__(self):
+        return f'{self.quantity} x {self.product.name}'
+    
+    def get_total_price(self):
+        return self.quantity * self.price  # Use the stored price
+
+class Payment(models.Model):
+    order = models.OneToOneField(Order, on_delete=models.CASCADE, related_name='payment')
+    payment_method = models.CharField(max_length=10, choices=[('mobile', 'Mobile'), ('bank', 'Bank')])
+    account_number = models.CharField(max_length=50, help_text="Account number for payment")
+    pay_with = models.CharField(max_length=100, help_text="Payment reference/details")
+    status = models.CharField(max_length=50, choices=[
+        ('PENDING', 'Pending'),
+        ('PAID', 'Paid'),
+        ('FAILED', 'Failed'),
+    ], default='PENDING')
+    created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'Payment for Order {self.order.id} - {self.payment_method}'
+
+class ProductReview(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='reviews')
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    rating = models.IntegerField(choices=[(i, i) for i in range(1, 6)])
+    comment = models.TextField()
+    created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'Review for {self.product.name} by {self.user.username}'
+
+# ← blank line, no import here
+
+class ChatbotQuery(models.Model):
+    message = models.TextField()
+    response = models.TextField()
+    user = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
+    created = models.DateTimeField(auto_now_add=True)
+    was_answered = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ['-created']
+        verbose_name = 'Chatbot Query'
+        verbose_name_plural = 'Chatbot Queries'
+
+    def __str__(self):
+        return f"{self.message[:50]} — {self.created.strftime('%d %b %Y %H:%M')}"
+
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    full_name = models.CharField(max_length=255, blank=True, null=True)
+    bio = models.TextField(blank=True, null=True, help_text="Tell us about yourself")
+    profile_picture = models.ImageField(upload_to='profile_pictures/', blank=True, null=True)
+    phone_number = models.CharField(max_length=20, blank=True, null=True)
+    date_of_birth = models.DateField(blank=True, null=True)
+    address = models.CharField(max_length=255, blank=True, null=True)
+    city = models.CharField(max_length=100, blank=True, null=True)
+    postal_code = models.CharField(max_length=20, blank=True, null=True)
+    country = models.CharField(max_length=100, blank=True, null=True)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'User Profile'
+        verbose_name_plural = 'User Profiles'
+
+    def __str__(self):
+        return f'{self.user.username} Profile'

@@ -1,0 +1,173 @@
+{% extends "eshop/base.html" %}
+{% load static %}
+
+{% block title %}Sign Up - Eshop{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card shadow-lg border-0" style="border-radius:16px; overflow:hidden;">
+                <div style="background:#e07b00; height:6px;"></div>
+                <div class="card-body p-5">
+                    <h2 class="text-center fw-bold mb-1" style="color:#e07b00;">Sign Up</h2>
+                    <p class="text-center text-muted mb-4" style="font-size:0.9rem;">
+                        Already have an account?
+                        <a href="{% url 'eshop:login' %}" style="color:#e07b00; font-weight:600;">Sign In</a>
+                    </p>
+
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger py-2">
+                            {% for error in form.non_field_errors %}
+                                <div>{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-warning py-2">{{ message }}</div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <form method="post" novalidate autocomplete="off">
+                        {% csrf_token %}
+
+                        <!-- Username -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold" style="color:#e07b00;">
+                                Username <span class="text-danger">*</span>
+                            </label>
+                            <input type="text"
+                                   name="username"
+                                   value="{{ form.username.value|default:'' }}"
+                                   class="form-control {% if form.username.errors %}is-invalid{% endif %}"
+                                   style="border:2px solid {% if form.username.errors %}#dc3545{% else %}#e07b00{% endif %}; border-radius:10px; padding:10px 14px;"
+                                   placeholder="Choose a username"
+                                   autocomplete="off"
+                                   required minlength="3">
+                            {% for error in form.username.errors %}
+                                <div class="text-danger" style="font-size:0.82rem; margin-top:4px;">⚠ {{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Email -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold" style="color:#e07b00;">
+                                Email <span class="text-danger">*</span>
+                            </label>
+                            <input type="email"
+                                   name="email"
+                                   value="{{ form.email.value|default:'' }}"
+                                   class="form-control {% if form.email.errors %}is-invalid{% endif %}"
+                                   style="border:2px solid {% if form.email.errors %}#dc3545{% else %}#e07b00{% endif %}; border-radius:10px; padding:10px 14px;"
+                                   placeholder="Enter your email"
+                                   autocomplete="off"
+                                   required>
+                            {% for error in form.email.errors %}
+                                <div class="text-danger" style="font-size:0.82rem; margin-top:4px;">⚠ {{ error }}</div>
+                            {% endfor %}
+                            <small class="text-muted">Required for password recovery.</small>
+                        </div>
+
+                        <!-- Password -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold" style="color:#e07b00;">
+                                Password <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group">
+                                <input type="password"
+                                       id="id_password1"
+                                       name="password1"
+                                       class="form-control {% if form.password1.errors %}is-invalid{% endif %}"
+                                       style="border:2px solid {% if form.password1.errors %}#dc3545{% else %}#e07b00{% endif %}; border-right:none; border-radius:10px 0 0 10px; padding:10px 14px;"
+                                       placeholder="Create a password"
+                                       autocomplete="off"
+                                       required minlength="8"
+                                       oninput="checkPassMatch()">
+                                <span class="input-group-text"
+                                      style="border:2px solid {% if form.password1.errors %}#dc3545{% else %}#e07b00{% endif %}; border-left:none; border-radius:0 10px 10px 0; cursor:pointer; background:#fff;"
+                                      onclick="togglePass('id_password1','eye1')">
+                                    <i id="eye1" class="bi bi-eye-slash" style="color:#e07b00;"></i>
+                                </span>
+                            </div>
+                            {% for error in form.password1.errors %}
+                                <div class="text-danger" style="font-size:0.82rem; margin-top:4px;">⚠ {{ error }}</div>
+                            {% endfor %}
+                            <small class="text-muted">At least 8 characters, not entirely numeric.</small>
+                        </div>
+
+                        <!-- Confirm Password -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold" style="color:#e07b00;">
+                                Confirm Password <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group">
+                                <input type="password"
+                                       id="id_password2"
+                                       name="password2"
+                                       class="form-control {% if form.password2.errors %}is-invalid{% endif %}"
+                                       style="border:2px solid {% if form.password2.errors %}#dc3545{% else %}#e07b00{% endif %}; border-right:none; border-radius:10px 0 0 10px; padding:10px 14px;"
+                                       placeholder="Repeat your password"
+                                       autocomplete="off"
+                                       required
+                                       oninput="checkPassMatch()">
+                                <span class="input-group-text"
+                                      style="border:2px solid {% if form.password2.errors %}#dc3545{% else %}#e07b00{% endif %}; border-left:none; border-radius:0 10px 10px 0; cursor:pointer; background:#fff;"
+                                      onclick="togglePass('id_password2','eye2')">
+                                    <i id="eye2" class="bi bi-eye-slash" style="color:#e07b00;"></i>
+                                </span>
+                            </div>
+                            {% for error in form.password2.errors %}
+                                <div class="text-danger" style="font-size:0.82rem; margin-top:4px;">⚠ {{ error }}</div>
+                            {% endfor %}
+                            <div id="pass-match-msg" style="font-size:0.8rem; margin-top:4px;"></div>
+                        </div>
+
+                        <button type="submit" class="btn w-100 fw-bold"
+                                style="background:#e07b00; color:#fff; border-radius:10px; padding:12px; font-size:1rem;">
+                            Create Account
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function togglePass(fieldId, iconId) {
+    const f = document.getElementById(fieldId);
+    const i = document.getElementById(iconId);
+    if (f.type === 'password') {
+        f.type = 'text';
+        i.classList.replace('bi-eye-slash', 'bi-eye');
+    } else {
+        f.type = 'password';
+        i.classList.replace('bi-eye', 'bi-eye-slash');
+    }
+}
+
+function checkPassMatch() {
+    const p1 = document.getElementById('id_password1').value;
+    const p2 = document.getElementById('id_password2').value;
+    const msg = document.getElementById('pass-match-msg');
+    const p2Field = document.getElementById('id_password2');
+
+    if (!p2) {
+        msg.textContent = '';
+        return;
+    }
+
+    if (p1 === p2) {
+        msg.textContent = '✓ Passwords match';
+        msg.style.color = 'green';
+        p2Field.setCustomValidity('');
+    } else {
+        msg.textContent = '✗ Passwords do not match';
+        msg.style.color = 'red';
+        p2Field.setCustomValidity('Passwords do not match');
+    }
+}
+</script>
+{% endblock %}

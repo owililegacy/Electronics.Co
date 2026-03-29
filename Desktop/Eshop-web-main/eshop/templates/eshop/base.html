@@ -1,0 +1,307 @@
+{% load static %}
+{% load django_bootstrap5 %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!--- Bootstrap Icons removed; using FontAwesome -->
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}"> 
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+    <link rel="stylesheet" href="{% static 'css/register.css' %}">
+    <link rel="stylesheet" href="{% static 'css/footer.css' %}">
+    <link rel="stylesheet" href="{% static 'css/order.css' %}">
+    <link rel="stylesheet" href="{% static 'css/review.css' %}">
+    <link rel="stylesheet" href="{% static 'css/contact.css' %}">
+    <link rel="stylesheet" href="{% static 'css/chatbot.css' %}">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    {% bootstrap_css %}
+    {% block head %}{% endblock %} 
+</head>
+<body class="d-flex flex-column min-vh-100">
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-warning navbar-enhanced"> 
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" href="{% url 'eshop:home' %}">
+                <i class="fas fa-shopping-bag me-2"></i>E-SHOP
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <!-- Search Bar -->
+                <form class="navbar-search-form" method="GET" action="{% url 'eshop:product_list' %}">
+                    <div class="input-group input-group-lg">
+                        <input type="text" name="q" class="form-control navbar-search" placeholder="Search products..." value="{% if request.GET.q %}{{ request.GET.q }}{% endif %}">
+                        <button class="btn btn-search" type="submit"><i class="bi bi-search"></i></button>
+                    </div>
+                </form>
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" aria-current="page" href="{% url 'eshop:home' %}">
+                            <i class="fas fa-home me-1"></i>Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'eshop:product_list' %}">
+                            <i class="fas fa-cube me-1"></i>Products
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'eshop:category_list' %}">
+                            <i class="fas fa-th me-1"></i>Categories
+                        </a> 
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'eshop:orders_list' %}">
+                            <i class="fas fa-box me-1"></i>Orders
+                        </a> 
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'eshop:faq' %}">
+                            <i class="fas fa-question-circle me-1"></i>FAQ
+                        </a>
+                    </li>
+                </ul>
+                <li class="nav-item cart-item">
+                    <a href="{% url 'eshop:view_cart' %}" class="nav-link nav-cart">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="cart-text">Cart</span>
+                        {% if user.is_authenticated %}
+                        <span class="badge-cart">{{ request.user.cart.items.count|default:0 }}</span>
+                        {% endif %}
+                    </a>
+                </li>
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                   {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'eshop:profile_view' %}" title="My Profile">
+                            <i class="fas fa-user-circle me-1"></i>Profile
+                        </a>
+                    </li>
+                    <li class="nav-item username-item">
+                        <a class="nav-link username-link" href="{% url 'eshop:profile_view' %}" title="My Profile">
+                            <i class="fas fa-user me-1"></i>{{ user.username }}
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-logout" href="{% url 'eshop:logout' %}">
+                            <i class="fas fa-sign-out-alt me-1"></i>Sign Out
+                        </a>
+                    </li>
+{% else %}
+    <li class="nav-item">
+        <a class="nav-link" href="{% url 'eshop:login' %}">Sign In</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link fw-bold" href="{% url 'eshop:register' %}"
+           style="background:#e07b00; color:#fff !important; border-radius:8px; padding:6px 14px;">
+            Sign Up
+        </a>
+    </li>
+{% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mt-4 flex-grow-1"> 
+        {% csrf_token %}
+        {% block content %}
+        {% endblock %}
+    </main>
+    <footer class="bg-dark text-white" style="padding: 0.25rem 0;">
+        <div class="container">
+            <!-- Footer Top Section -->
+            <div class="row" style="margin-bottom: 0.25rem;">
+                <!-- Company Info -->
+                <div class="col-md-3" style="margin-bottom: 0.15rem;">
+                    <h6 class="fw-bold text-orange" style="margin-bottom: 0.15rem;">E-SHOP KENYA</h6>
+                    <p class="small text-muted">Your trusted online store for premium electronics and gadgets. Serving Kenya with quality products and exceptional service.</p>
+                    <div class="social-links mt-3">
+                        <a href="#" class="text-orange me-3"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="text-orange me-3"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-orange me-3"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-orange"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+
+                <!-- Quick Links -->
+                <div class="col-md-3" style="margin-bottom: 0.15rem;">
+                    <h6 class="fw-bold text-orange" style="margin-bottom: 0.15rem;">Quick Links</h6>
+                    <ul class="list-unstyled small">
+                        <li class="mb-2"><a href="{% url 'eshop:home' %}" class="text-decoration-none text-white-50 hover-orange">Home</a></li>
+                        <li class="mb-2"><a href="{% url 'eshop:product_list' %}" class="text-decoration-none text-white-50 hover-orange">Products</a></li>
+                        <li class="mb-2"><a href="{% url 'eshop:category_list' %}" class="text-decoration-none text-white-50 hover-orange">Categories</a></li>
+                        <li class="mb-2"><a href="{% url 'eshop:all_reviews' %}" class="text-decoration-none text-white-50 hover-orange">Reviews</a></li>
+                        <li class="mb-2"><a href="{% url 'eshop:faq' %}" class="text-decoration-none text-white-50 hover-orange">FAQ</a></li>
+                    </ul>
+                </div>
+
+                <!-- Customer Service -->
+                <div class="col-md-3" style="margin-bottom: 0.15rem;">
+                    <h6 class="fw-bold text-orange" style="margin-bottom: 0.15rem;">Customer Service</h6>
+                    <ul class="list-unstyled small">
+                        <li class="mb-2"><a href="{% url 'eshop:about' %}" class="text-decoration-none text-white-50 hover-orange">About Us</a></li>
+                        <li class="mb-2"><a href="{% url 'eshop:contact' %}" class="text-decoration-none text-white-50 hover-orange">Contact Us</a></li>
+                        <li class="mb-2"><a href="{% url 'eshop:support' %}" class="text-decoration-none text-white-50 hover-orange">Support</a></li>
+                        <li class="mb-2"><a href="#" class="text-decoration-none text-white-50 hover-orange">Shipping Info</a></li>
+                        <li class="mb-2"><a href="#" class="text-decoration-none text-white-50 hover-orange">Returns Policy</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact Info -->
+                <div class="col-md-3" style="margin-bottom: 0.15rem;">
+                    <h6 class="fw-bold text-orange" style="margin-bottom: 0.15rem;">Contact Info</h6>
+                    <div class="small mb-3">
+                        <p class="mb-2">
+                            <i class="fas fa-envelope text-orange"></i>
+                            <a href="mailto:support@eshop.com" class="text-decoration-none text-white-50">support@eshop.com</a>
+                        </p>
+                        <p class="mb-2">
+                            <i class="fas fa-phone text-orange"></i>
+                            <a href="tel:+254712345678" class="text-decoration-none text-white-50">+254 712 345 678</a>
+                        </p>
+                        <p class="mb-0">
+                            <i class="fas fa-map-marker-alt text-orange"></i>
+                            <span class="text-white-50">Nairobi, Kenya</span>
+                        </p>
+                    </div>
+                    <div class="payment-methods mt-3">
+                        <small class="text-orange fw-bold d-block mb-2">We Accept:</small>
+                        <i class="fab fa-cc-paypal text-white-50 me-2"></i>
+                        <i class="fab fa-cc-visa text-white-50 me-2"></i>
+                        <i class="fas fa-mobile-alt text-white-50"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Newsletter Section -->
+            <div class="row border-top border-bottom" style="padding: 0.2rem 0; margin-bottom: 0.15rem;">
+                <div class="col-md-6">
+                    <h6 class="fw-bold text-orange" style="margin-bottom: 0.1rem;">Stay Updated</h6>
+                    <p class="small text-muted">Subscribe to get special offers and updates!</p>
+                </div>
+                <div class="col-md-6">
+                    <div class="input-group input-group-sm">
+                        <input type="email" class="form-control" placeholder="Enter your email">
+                        <button class="btn btn-orange" type="button">Subscribe</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer Bottom -->
+            <div class="row align-items-center" style="padding: 0.15rem 0;">
+                <div class="col-md-6 text-center text-md-start">
+                    <p class="small text-muted mb-0">&copy; {% now "Y" %} E-SHOP Kenya. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <small class="text-muted">
+                        <a href="#" class="text-decoration-none text-white-50 me-3">Privacy Policy</a>
+                        <a href="#" class="text-decoration-none text-white-50 me-3">Terms & Conditions</a>
+                        <a href="#" class="text-decoration-none text-white-50">Cookie Policy</a>
+                    </small>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    {% bootstrap_javascript %}
+    {% block scripts %}{% endblock %} 
+
+    <!-- ===== CHATBOT WIDGET ===== -->
+<button id="chatbot-toggle" title="Chat with us">
+    <span>💬</span>
+    <span class="chat-badge">1</span>
+</button>
+
+<div id="chatbot-window" class="hidden">
+    <div id="chatbot-header">
+        <div class="bot-title">
+            <div class="bot-avatar">🤖</div>
+            <div>
+                <div>E-SHOP Assistant</div>
+                <div style="font-size:0.72rem;font-weight:400;opacity:0.9;">Online — here to help</div>
+            </div>
+        </div>
+        <button id="chatbot-close">✕</button>
+    </div>
+    <div id="chatbot-messages"></div>
+    <div id="chatbot-footer">
+        <input id="chatbot-input" type="text" placeholder="Type a message…" autocomplete="off" maxlength="300" />
+        <button id="chatbot-send">➤</button>
+    </div>
+</div>
+
+<script>
+(function () {
+    const toggle   = document.getElementById('chatbot-toggle');
+    const win      = document.getElementById('chatbot-window');
+    const closeBtn = document.getElementById('chatbot-close');
+    const messages = document.getElementById('chatbot-messages');
+    const input    = document.getElementById('chatbot-input');
+    const sendBtn  = document.getElementById('chatbot-send');
+    const badge    = toggle.querySelector('.chat-badge');
+    let isOpen = false;
+
+    function openChat() {
+        isOpen = true;
+        win.classList.remove('hidden');
+        badge.style.display = 'none';
+        input.focus();
+        if (messages.children.length === 0) {
+            addBotMessage(
+                'Hi there! 👋 Welcome to <b>E-SHOP</b>. How can I help you today?',
+                ['Products', 'Delivery', 'Payment', 'My Orders', 'Returns', 'Help']
+            );
+        }
+    }
+    function closeChat() {
+        isOpen = false;
+        win.classList.add('hidden');
+    }
+    toggle.addEventListener('click', () => isOpen ? closeChat() : openChat());
+    closeBtn.addEventListener('click', closeChat);
+
+    function addMessage(html, cls) {
+        const div = document.createElement('div');
+        div.className = 'chat-msg ' + cls;
+        div.innerHTML = html;
+        messages.appendChild(div);
+        messages.scrollTop = messages.scrollHeight;
+        return div;
+    }
+    function addBotMessage(html, chips) {
+        addMessage(html, 'bot');
+        if (chips && chips.length) {
+            const row = document.createElement('div');
+            row.className = 'quick-replies';
+            chips.forEach(label => {
+                const btn = document.createElement('button');
+                btn.className = 'quick-chip';
+                btn.textContent = label;
+                btn.addEventListener('click', () => { row.remove(); sendMessage(label); });
+                row.appendChild(btn);
+            });
+            messages.appendChild(row);
+            messages.scrollTop = messages.scrollHeight;
+        }
+    }
+    function sendMessage(text) {
+        text = (text || input.value).trim();
+        if (!text) return;
+        input.value = '';
+        addMessage(text, 'user');
+        const typing = addMessage('Typing…', 'typing');
+        fetch('/contact/?message=' + encodeURIComponent(text))
+            .then(r => r.json())
+            .then(data => { typing.remove(); addBotMessage(data.response || 'Sorry, something went wrong.'); })
+            .catch(() => { typing.remove(); addBotMessage('⚠️ Connection error. Please try again.'); });
+    }
+    sendBtn.addEventListener('click', () => sendMessage());
+    input.addEventListener('keydown', e => { if (e.key === 'Enter') sendMessage(); });
+})();
+</script>
+</body>
+</html>

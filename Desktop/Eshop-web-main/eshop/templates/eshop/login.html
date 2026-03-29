@@ -1,0 +1,93 @@
+{% extends "eshop/base.html" %}
+{% load static %}
+
+{% block title %}Sign In - Eshop{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card shadow-lg border-0" style="border-radius:16px; overflow:hidden;">
+                <div style="background:#e07b00; height:6px;"></div>
+                <div class="card-body p-5">
+                    <h2 class="text-center fw-bold mb-1" style="color:#e07b00;">Sign In</h2>
+                    <p class="text-center text-muted mb-4" style="font-size:0.9rem;">
+                        Welcome back! Don't have an account?
+                        <a href="{% url 'eshop:register' %}" style="color:#e07b00; font-weight:600;">Sign Up</a>
+                    </p>
+
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-warning py-2">{{ message }}</div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <form method="post" autocomplete="off">
+                        {% csrf_token %}
+
+                        <!-- Username -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold" style="color:#e07b00;">
+                                Username <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" name="username"
+                                   class="form-control"
+                                   style="border:2px solid #e07b00; border-radius:10px; padding:10px 14px;"
+                                   placeholder="Enter your username"
+                                   autocomplete="off"
+                                   required>
+                        </div>
+
+                        <!-- Password -->
+                        <div class="mb-2">
+                            <label class="form-label fw-bold" style="color:#e07b00;">
+                                Password <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group">
+                                <input type="password" id="id_password" name="password"
+                                       class="form-control"
+                                       style="border:2px solid #e07b00; border-right:none; border-radius:10px 0 0 10px; padding:10px 14px;"
+                                       placeholder="Enter your password"
+                                       autocomplete="off"
+                                       required>
+                                <span class="input-group-text"
+                                      style="border:2px solid #e07b00; border-left:none; border-radius:0 10px 10px 0; cursor:pointer; background:#fff;"
+                                      onclick="togglePass('id_password','eyeIcon')">
+                                    <i id="eyeIcon" class="bi bi-eye-slash" style="color:#e07b00;"></i>
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Forgot password -->
+                        <div class="text-end mb-4">
+                            <a href="{% url 'eshop:password_reset' %}"
+                               style="color:#e07b00; font-size:0.85rem; font-weight:600; text-decoration:none;">
+                                Forgot password?
+                            </a>
+                        </div>
+
+                        <button type="submit" class="btn w-100 fw-bold"
+                                style="background:#e07b00; color:#fff; border-radius:10px; padding:12px; font-size:1rem;">
+                             Sign In
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function togglePass(fieldId, iconId) {
+    const f = document.getElementById(fieldId);
+    const i = document.getElementById(iconId);
+    if (f.type === 'password') {
+        f.type = 'text';
+        i.classList.replace('bi-eye-slash', 'bi-eye');
+    } else {
+        f.type = 'password';
+        i.classList.replace('bi-eye', 'bi-eye-slash');
+    }
+}
+</script>
+{% endblock %}

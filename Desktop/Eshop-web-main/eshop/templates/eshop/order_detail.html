@@ -1,0 +1,93 @@
+{% extends 'eshop/base.html' %}
+
+{% block content %}
+<div class="order-details-container">
+  <h1 class="heading-orange">Order Details (#{{ order.id }})</h1>
+  <p class="order-date">Order Date: {{ order.created }}</p>
+
+  <!-- Payment Status -->
+  {% if order.paid %}
+    <p style="color:green; font-weight:bold; font-size:18px;"> Payment Confirmed</p>
+  {% else %}
+    <p style="color:red; font-weight:bold;"> Not Paid Yet</p>
+  {% endif %}
+
+  <!-- Order Tracking -->
+  <h2 class="sub-heading-orange">Order Tracking:</h2>
+  <div style="display:flex; justify-content:space-between; align-items:center; margin:20px 0;">
+    
+    {% for step, label in tracking_steps %}
+    <div style="text-align:center; flex:1; position:relative;">
+      <div style="width:35px; height:35px; border-radius:50%; margin:0 auto; display:flex; align-items:center; justify-content:center;
+        background:{% if step == 'DELIVERED' %}#ddd{% elif order.status == step or order.status > step %}#e67e00{% else %}#ddd{% endif %};
+        color:white; font-weight:bold;">
+        {% if step == 'DELIVERED' %}○{% elif order.status == step or order.status > step %}✓{% else %}○{% endif %}
+      </div>
+      <small style="display:block; margin-top:5px; font-size:11px;
+        color:{% if step == 'DELIVERED' %}#999{% elif order.status == step %}#e67e00{% else %}#999{% endif %}; font-weight:{% if order.status == step and step != 'DELIVERED' %}bold{% else %}normal{% endif %};">
+        {{ label }}
+      </small>
+    </div>
+    {% if not forloop.last %}
+    <div style="flex:1; height:3px; background:{% if step == 'DELIVERED' %}#ddd{% elif order.status > step %}#e67e00{% else %}#ddd{% endif %};"></div>
+    {% endif %}
+    {% endfor %}
+
+  </div>
+
+  <!-- Payment Buttons (only if not paid) -->
+  {% if not order.paid %}
+  <div style="display:flex; gap:20px; margin:20px 0; flex-wrap:wrap;">
+    
+    <!-- M-Pesa -->
+    <div style="flex:1; min-width:250px; border:2px solid #4CAF50; border-radius:10px; padding:20px;">
+      <h4 style="color:#4CAF50; margin-top:0;"> Pay with M-Pesa</h4>
+      <form method="POST" action="{% url 'eshop:pay_mpesa' order.id %}">
+        {% csrf_token %}
+        <input type="tel" name="phone_number" placeholder="e.g. 0712345678" required
+          style="width:100%; padding:10px; border:1px solid #ccc; border-radius:5px; margin-bottom:10px; box-sizing:border-box;">
+        <button type="submit"
+          style="background:#4CAF50; color:white; padding:10px; width:100%; border:none; border-radius:5px; cursor:pointer; font-size:16px;">
+          Pay KES {{ order.get_total_price }}
+        </button>
+      </form>
+    </div>
+
+  </div>
+  {% endif %}
+
+  <!-- Billing Information -->
+  <h2 class="sub-heading-orange">Billing Information:</h2>
+  <ul class="billing-info">
+    <li>{{ order.first_name }} {{ order.last_name }}</li>
+    <li>{{ order.email }}</li>
+    <li>{{ order.address }}</li>
+    <li>{{ order.postal_code }} {{ order.city }}</li>
+  </ul>
+
+  <!-- Order Items -->
+  <h2 class="sub-heading-orange">Order Items:</h2>
+  <table class="order-table">
+    <thead>
+      <tr>
+        <th>Product</th>
+        <th>Quantity</th>
+        <th>Price</th>
+        <th>Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in order.items.all %}
+        <tr>
+          <td>{{ item.product.name }}</td>
+          <td>{{ item.quantity }}</td>
+          <td>KES {{ item.price }}</td>
+          <td>KES {{ item.get_total_price }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <p class="total-price">Total Price: KES {{ order.get_total_price }}</p>
+</div>
+{% endblock %}

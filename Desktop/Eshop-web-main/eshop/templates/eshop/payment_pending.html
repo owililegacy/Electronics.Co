@@ -1,0 +1,137 @@
+{% extends 'eshop/base.html' %}
+{% block content %}
+<div class="container mt-5" style="max-width:550px;">
+    <div class="card p-5 shadow text-center">
+
+        <!-- RECEIPT (hidden until paid) -->
+        <div id="receipt-section" style="display:none; text-align:left;">
+            <h3 style="color:#ff6600; text-align:center;">🧾 Checkout</h3>
+            <p style="text-align:center; color:#555;">Balance Owed: <strong>KES {{ order.get_total_price }}</strong></p>
+            <hr>
+            <h5 style="color:#ff6600;">Order Receipt</h5>
+            <table style="width:100%; font-size:15px; line-height:2;">
+                <tr><td><strong>Order ID:</strong></td><td>#{{ order.id }}</td></tr>
+                <tr><td><strong>Name:</strong></td><td>{{ order.first_name }} {{ order.last_name }}</td></tr>
+                <tr><td><strong>Email:</strong></td><td>{{ order.email }}</td></tr>
+                <tr><td><strong>Shipping Address:</strong></td><td>{{ order.postal_code }}-{{ order.address }}</td></tr>
+                <tr><td><strong>Total Amount:</strong></td><td>KES {{ order.get_total_price }}</td></tr>
+                <tr><td><strong>Payment Method:</strong></td><td>M-Pesa</td></tr>
+                <tr><td><strong>Date:</strong></td><td id="receipt-date">—</td></tr>
+            </table>
+            <p class="mt-3 text-success text-center">
+                <strong>Payment Successful! Thank you for shopping with us.</strong>
+            </p>
+            <div class="text-center mt-3">
+                <a href="{% url 'eshop:order_detail' order.id %}" class="btn btn-success me-2">View Order</a>
+                <a href="{% url 'eshop:product_list' %}" class="btn btn-outline-secondary">Continue Shopping</a>
+            </div>
+        </div>
+
+        <!-- WAITING (shown until paid) -->
+        <div id="waiting-section">
+            <h2 style="color:#ff6600;"> Waiting for Payment</h2>
+            <p class="mt-3">Order <strong>#{{ order.id }}</strong> — <strong>KES {{ order.get_total_price }}</strong></p>
+            <hr>
+            <p id="waiting-msg">A payment prompt was sent to your phone.<br>
+            <strong>Enter your M-Pesa PIN</strong> to complete the payment.</p>
+            <p id="timer-display" class="text-muted">Time remaining: <strong><span id="countdown"></span></strong></p>
+
+            <!-- Timeout message -->
+            <div id="timeout-msg" style="display:none;">
+                <div class="alert alert-warning mt-3">
+                    <strong>Payment prompt expired.</strong> You did not enter your PIN in time.
+                </div>
+                <a href="{% url 'eshop:payment_page' order.id %}" class="btn btn-warning mt-2">🔄 Try Again</a>
+                <a href="{% url 'eshop:view_cart' %}" class="btn btn-outline-secondary mt-2 ms-2">🛒 Back to Cart</a>
+            </div>
+
+            <!-- Manual confirm -->
+            <div id="confirm-section" class="mt-3">
+                <form method="post" action="{% url 'eshop:confirm_payment' order.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-success"> I've completed M-Pesa payment</button>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    const ORDER_ID = "{{ order.id }}";
+    const CHECK_URL = "{% url 'eshop:check_payment_status' order.id %}";
+    const STORAGE_KEY = 'payment_start_' + ORDER_ID;
+    const TIMEOUT_SECONDS = 60;
+
+    if (!localStorage.getItem(STORAGE_KEY)) {
+        localStorage.setItem(STORAGE_KEY, Date.now().toString());
+    }
+
+    const startTime = parseInt(localStorage.getItem(STORAGE_KEY));
+    const countdownEl = document.getElementById('countdown');
+    const timerDisplay = document.getElementById('timer-display');
+    const waitingMsg = document.getElementById('waiting-msg');
+    const timeoutMsg = document.getElementById('timeout-msg');
+    const confirmSection = document.getElementById('confirm-section');
+    const waitingSection = document.getElementById('waiting-section');
+    const receiptSection = document.getElementById('receipt-section');
+
+    let pollInterval = null;
+    let countdownInterval = null;
+
+    function getSecondsLeft() {
+        const elapsed = Math.floor((Date.now() - startTime) / 1000);
+        return Math.max(0, TIMEOUT_SECONDS - elapsed);
+    }
+
+    function showReceipt() {
+        if (pollInterval) clearInterval(pollInterval);
+        if (countdownInterval) clearInterval(countdownInterval);
+        document.getElementById('receipt-date').textContent = new Date().toLocaleString();
+        waitingSection.style.display = 'none';
+        receiptSection.style.display = 'block';
+        localStorage.removeItem(STORAGE_KEY);
+    }
+
+    function showTimeout() {
+        if (pollInterval) clearInterval(pollInterval);
+        if (countdownInterval) clearInterval(countdownInterval);
+        waitingMsg.style.display = 'none';
+        timerDisplay.style.display = 'none';
+        confirmSection.style.display = 'none';
+        timeoutMsg.style.display = 'block';
+        localStorage.removeItem(STORAGE_KEY);
+    }
+
+    function checkPayment() {
+    fetch(CHECK_URL, {
+        headers: {
+            'ngrok-skip-browser-warning': 'true'
+        }
+    })
+    .then(res => res.json())
+    .then(data => { if (data.paid) showReceipt(); })
+    .catch(() => {});
+}
+
+    // Check immediately on page load
+    checkPayment();
+
+    const initialLeft = getSecondsLeft();
+    countdownEl.textContent = initialLeft + 's';
+
+    if (initialLeft <= 0) {
+        showTimeout();
+    } else {
+        // Poll payment status every 5 seconds (no page reload)
+        pollInterval = setInterval(checkPayment, 5000);
+
+        // Live countdown
+        countdownInterval = setInterval(() => {
+            const left = getSecondsLeft();
+            countdownEl.textContent = left + 's';
+            if (left <= 0) showTimeout();
+        }, 1000);
+    }
+</script>
+{% endblock %}
